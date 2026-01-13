@@ -16,6 +16,7 @@ export default function Header() {
           <Toolbar>
             <Button color="inherit" href="/">Inicio</Button>
             <Button color="inherit" href="/add-pokemon">Agregar Pokemon </Button>
+            <Button color="inherit" href="/login">Iniciar sesion</Button>
           </Toolbar>
         </AppBar>
       </Container>

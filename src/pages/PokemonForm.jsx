@@ -29,12 +29,15 @@ export default function PokemonForm() {
     alert("Pokemon agregado exitosamente");
     console.log(newPokemon);
     navigate("/");
-  } catch (error) {
-    console.error("Error al agregar el pokemon:", error);
-    alert("Error al agregar el pokemon");
-  }
-};
+} catch (error) {
+  console.log("STATUS:", error?.response?.status);
+  console.log("DATA:", error?.response?.data);
+  console.log("HEADERS:", error?.response?.headers);
 
+  alert("Error al agregar el pokemon");
+}
+
+};
 
   return (
     <>

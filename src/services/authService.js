@@ -12,12 +12,12 @@ const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET
  */
 
 export async function login(username, password) {
-  const params = new URLSearchParams()
-  params.append("grant_type", "password")
-  params.append("username", username)
-  params.append("password", password)
-  params.append("client_id", CLIENT_ID)
-  params.append("client_secret", CLIENT_SECRET)
+  const params = new URLSearchParams();
+  params.append("grant_type", "password");
+  params.append("username", username);
+  params.append("password", password);
+  params.append("client_id", CLIENT_ID);
+  params.append("client_secret", CLIENT_SECRET);
 
   const response = await axios.post(`${AUTH_BASE_URL}/token/`, params, {
     headers: {
@@ -25,4 +25,25 @@ export async function login(username, password) {
     },
   });
   return response.data
+}
+
+/**
+ * Cerrar sesion de usuario
+ * @returns 
+ */
+export async function logout() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return;
+
+  const params = new URLSearchParams();
+  params.append("token", token);
+  params.append("client_id", CLIENT_ID);
+  params.append("client_secret", CLIENT_SECRET);
+
+  await axios.post(`${AUTH_BASE_URL}/revoke_token/`, params, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+  localStorage.removeItem("access_token");
 }

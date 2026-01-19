@@ -15,7 +15,7 @@ axios.interceptors.request.use((config) => {
  * @returns
  */
 export async function fetchPokemons() {
-  const response = await axios.get(`${API_BASE_URL}/pokemons`);
+  const response = await axios.get(`${API_BASE_URL}/pokemons/`);
   console.log(response);
   return response.data;
 }
@@ -59,4 +59,37 @@ export async function addPokemon(pokemonData) {
     payload
   );
   return response.data;
+}
+
+
+/**
+ * Obtener un pokemon por ID (para editar)
+ */
+export async function fetchPokemonById(id) {
+  const response = await axios.get(`${API_BASE_URL}/pokemons/${id}/`);
+  return response.data;
+}
+
+/**
+ * Actualizar pokemon 
+ */
+export async function updatePokemon(id, pokemonData) {
+  const payload = { ...pokemonData };
+
+  if (pokemonData.picture instanceof File) {
+    payload.picture = await fileToBase64(pokemonData.picture); // SI cambió imagen
+  } else {
+    delete payload.picture; // NO cambió imagen => no mandes picture
+  }
+
+  const response = await axios.patch(`${API_BASE_URL}/pokemons/${id}/`, payload);
+  return response.data;
+}
+
+
+/**
+ * Eliminar pokemon
+ */
+export async function deletePokemon(id) {
+  await axios.delete(`${API_BASE_URL}/pokemons/${id}/`);
 }

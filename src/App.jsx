@@ -3,6 +3,10 @@ import Header from "./componentes/Header";
 import PokemonList from "./pages/PokemonList";
 import PokemonForm from "./pages/PokemonForm";
 import LoginPage from "./pages/LoginPage";
+import EntrenadoresList from "./pages/EntrenadoresList";
+import EntrenadoresForm from "./pages/EntrenadoresForm";
+import EntrenadorDetalle from "./pages/EntrenadorDetalle";
+import PokemonDetalle from "./pages/PokemonDetalle";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -12,8 +16,19 @@ function App() {
       <Container>
         <Header />
         <Routes>
+          {/* Pokemon */}
           <Route path="/" element={<PokemonList />} />
           <Route path="/add-pokemon" element={<PokemonForm />} />
+          <Route path="/edit-pokemon/:id" element={<PokemonForm />} />
+
+          {/* Entrenadores */}
+          <Route path="/entrenadores" element={<EntrenadoresList />} />
+          <Route path="/add-entrenador" element={<EntrenadoresForm />} />
+          <Route path="/edit-entrenador/:id" element={<EntrenadoresForm />} />
+          <Route path="/entrenador/:id" element={<EntrenadorDetalle />} />
+          <Route path="/pokemon/:id" element={<PokemonDetalle />} />
+
+          {/* Login */}
           <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Container>

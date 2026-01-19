@@ -3,7 +3,7 @@ import pokedexLogo from "../assets/pokedex-logo.png";
 
 import './Header.css';
 import { logout } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const isLoggedIn = localStorage.getItem('access_token') !== null;
@@ -24,10 +24,15 @@ export default function Header() {
             </div>
           </Toolbar>
           <Toolbar>
-            <Button color="inherit" href="/">Inicio</Button>
+            <Button color="inherit" href="/">Pokemons</Button>
+            <Button color="inherit" component={Link} to="/entrenadores">
+             Entrenadores
+            </Button>
+
             {isLoggedIn && 
             <>
             <Button color="inherit" href="/add-pokemon">Agregar Pokemon </Button>
+            <Button color="inherit" component={Link} to="/add-entrenador">Agregar Entrenador </Button>
             <Button color="inherit" onClick={handleLogout}>Cerrar sesión </Button>
             </>
             }

@@ -2,11 +2,12 @@ import { Box, Button, TextField, Typography, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addPokemon, fetchPokemonById, updatePokemon } from "../services/pokemonService";
+import Spinner from "../componentes/Spinner";
 
 export default function PokemonForm() {
   const navigate = useNavigate();
-  const { id } = useParams();                 
-  const isEdit = Boolean(id);                
+  const { id } = useParams();
+  const isEdit = Boolean(id);
 
   const [pokemonData, setPokemonData] = useState({
     name: "",
@@ -16,8 +17,11 @@ export default function PokemonForm() {
     picture: null,
   });
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!isEdit) return;
+    setLoading(true);
     fetchPokemonById(id)
       .then((data) => {
         setPokemonData({
@@ -28,7 +32,8 @@ export default function PokemonForm() {
           picture: null,
         });
       })
-      .catch(() => alert("Error cargando el pokemon"));
+      .catch(() => alert("Error cargando el pokemon"))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleChange = (e) => {
@@ -43,7 +48,7 @@ export default function PokemonForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // NUEVO: si es editar -> PUT, si no -> POST
+      setLoading(true);
       if (isEdit) {
         const updatedPokemon = await updatePokemon(id, pokemonData);
         alert("Pokemon actualizado exitosamente");
@@ -58,24 +63,30 @@ export default function PokemonForm() {
       console.log("STATUS:", error?.response?.status);
       console.log("DATA:", error?.response?.data);
       console.log("HEADERS:", error?.response?.headers);
-      alert("Error al guardar el pokemon"); 
+      alert("Error al guardar el pokemon");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <>
       <Typography variant="h4" gutterBottom>
-        {isEdit ? "Editar Pokemon." : "Formulario de Pokemon."}  {/* NUEVO: solo cambia el texto */}
+        {isEdit ? "Editar Pokemon." : "Formulario de Pokemon."}
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField label="Nombre" name="name" variant="outlined" onChange={handleChange} value={pokemonData.name} />
         <TextField select label="Tipo" name="tipo" variant="outlined" onChange={handleChange} value={pokemonData.tipo}>
-        <MenuItem value="Eléctrico">Electrico</MenuItem>
-        <MenuItem value="Agua">Agua</MenuItem>
-        <MenuItem value="Fuego">Fuego</MenuItem>
-        <MenuItem value="Planta">Planta</MenuItem>
-        <MenuItem value="Tierra">Tierra</MenuItem>
+          <MenuItem value="Eléctrico">Electrico</MenuItem>
+          <MenuItem value="Agua">Agua</MenuItem>
+          <MenuItem value="Fuego">Fuego</MenuItem>
+          <MenuItem value="Planta">Planta</MenuItem>
+          <MenuItem value="Tierra">Tierra</MenuItem>
         </TextField>
         <TextField label="Peso" name="weight" variant="outlined" onChange={handleChange} value={pokemonData.weight} />
         <TextField label="Altura" name="height" variant="outlined" onChange={handleChange} value={pokemonData.height} />

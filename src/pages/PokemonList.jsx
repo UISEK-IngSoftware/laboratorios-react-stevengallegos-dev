@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { CircularProgress, Grid, Box } from "@mui/material";
 import PokemonCard from "../componentes/PokemonCard";
 import { fetchPokemons, deletePokemon } from "../services/pokemonService";
 
 export default function PokemonList() {
   const [pokemons, setPokemons] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadPokemons = () => {
+    setLoading(true);
     fetchPokemons()
       .then((data) => setPokemons(data))
-      .catch(() => alert("Error obteniendo los pokemons"));
+      .catch(() => alert("Error obteniendo los pokemons"))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -21,6 +24,14 @@ export default function PokemonList() {
     await deletePokemon(id);
     loadPokemons();
   };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   return (
     <Grid container spacing={2} marginTop={2}>

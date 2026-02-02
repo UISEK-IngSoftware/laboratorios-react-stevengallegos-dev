@@ -2,6 +2,8 @@ import { Box, Button, TextField, Typography } from "@mui/material"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { login } from "../services/authService"
+import Spinner from "../componentes/Spinner";
+
 
 
 export default function LoginPage() {
@@ -11,6 +13,7 @@ export default function LoginPage() {
     password: ""
   })
 
+  const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
     setLoginData({
       ...loginData,
@@ -21,6 +24,8 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
   e.preventDefault();
   try {
+     setLoading(true);
+
     const responseData = await login(loginData.username, loginData.password);
     localStorage.setItem("access_token", responseData.access_token);
     alert("Inicio de sesión exitoso");
@@ -28,7 +33,16 @@ export default function LoginPage() {
   } catch (error) {
     console.error("Error during login:", error);
     alert("Error al iniciar sesión");
+    } finally {
+      
+      setLoading(false);
   }
+}
+
+if (loading) {
+  return (
+    <Spinner />
+  );
 }
 
   return (

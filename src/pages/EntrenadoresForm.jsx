@@ -1,7 +1,8 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { addEntrenador, fetchEntrenadorById, updateEntrenador } from "../services/entrenadoresService";
+import Spinner from "../componentes/Spinner";
 
 export default function EntrenadoresForm() {
   const navigate = useNavigate();
@@ -16,8 +17,12 @@ export default function EntrenadoresForm() {
     foto: null,
   });
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!isEdit) return;
+
+    setLoading(true);
     fetchEntrenadorById(id)
       .then((data) => {
         setEntrenadorData({
@@ -28,7 +33,8 @@ export default function EntrenadoresForm() {
           foto: null,
         });
       })
-      .catch(() => alert("Error cargando el entrenador"));
+      .catch(() => alert("Error cargando el entrenador"))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleChange = (e) => {
@@ -43,20 +49,25 @@ export default function EntrenadoresForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       if (isEdit) {
-        await updateEntrenador(id, entrenadorData); // PATCH
+        await updateEntrenador(id, entrenadorData);
         alert("Entrenador actualizado exitosamente");
       } else {
-        await addEntrenador(entrenadorData); // POST
+        await addEntrenador(entrenadorData);
         alert("Entrenador agregado exitosamente");
       }
       navigate("/entrenadores");
-    } catch (error) {
-      console.log("STATUS:", error?.response?.status);
-      console.log("DATA:", error?.response?.data);
+    } catch {
       alert("Error al guardar el entrenador");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -65,20 +76,22 @@ export default function EntrenadoresForm() {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField label="Nombre" name="nombre" variant="outlined" onChange={handleChange} value={entrenadorData.nombre} />
-        <TextField label="Apellido" name="apellido" variant="outlined" onChange={handleChange} value={entrenadorData.apellido} />
-        <TextField label="Nivel" name="nivel" type="number" variant="outlined" onChange={handleChange} value={entrenadorData.nivel} />
+        <TextField label="Nombre" name="nombre" onChange={handleChange} value={entrenadorData.nombre} />
+        <TextField label="Apellido" name="apellido" onChange={handleChange} value={entrenadorData.apellido} />
+        <TextField label="Nivel" name="nivel" type="number" onChange={handleChange} value={entrenadorData.nivel} />
         <TextField
           label="Fecha de nacimiento"
           name="fecha_nacimiento"
           type="date"
           InputLabelProps={{ shrink: true }}
-          variant="outlined"
           onChange={handleChange}
           value={entrenadorData.fecha_nacimiento}
         />
-        <input type="file" name="foto" accept="image/*" onChange={handleChange} />
-        <Button variant="contained" type="submit">Guardar</Button>
+        <input type="file" name="foto" onChange={handleChange} />
+
+        <Button variant="contained" type="submit">
+          Guardar
+        </Button>
       </Box>
     </>
   );

@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Box, CircularProgress } from "@mui/material";
 import EntrenadorCard from "../componentes/EntrenadorCard";
-import { fetchEntrenadores,deleteEntrenador } from "../services/entrenadoresService";
+import { fetchEntrenadores, deleteEntrenador } from "../services/entrenadoresService";
 
 export default function EntrenadoresList() {
   const [entrenadores, setEntrenadores] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const loadEntrenadores = () => {
+    setLoading(true);
     fetchEntrenadores()
       .then((data) => setEntrenadores(data))
-      .catch(() => alert("Error obteniendo los entrenadores"));
+      .catch(() => alert("Error obteniendo los entrenadores"))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -21,6 +24,19 @@ export default function EntrenadoresList() {
     await deleteEntrenador(id);
     loadEntrenadores();
   };
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
 
   return (
     <Grid container spacing={2} marginTop={2}>

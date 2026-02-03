@@ -2,17 +2,25 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchEntrenadorById } from "../services/entrenadoresService";
 import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
+import Spinner from "../componentes/Spinner";
 
 export default function EntrenadorDetalle() {
   const { id } = useParams();
   const [entrenador, setEntrenador] = useState(null);
+  const [loading, setLoading] = useState(false);
   const mediaUrl = import.meta.env.VITE_MEDIA_URL;
 
   useEffect(() => {
-    fetchEntrenadorById(id).then(setEntrenador);
+    setLoading(true);
+    fetchEntrenadorById(id)
+      .then(setEntrenador)
+      .catch(() => alert("Error cargando el entrenador"))
+      .finally(() => setLoading(false));
   }, [id]);
 
-  if (!entrenador) return <p>Cargando...</p>;
+  if (loading) return <Spinner />;
+
+  if (!entrenador) return null;
 
   const image = entrenador.foto
     ? entrenador.foto.startsWith("data:image")
